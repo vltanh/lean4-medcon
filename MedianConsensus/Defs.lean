@@ -61,8 +61,8 @@ def deltaTotal (Ps : Fin k → Clustering V) (u v : V) : ℤ := ∑ i, delta (Ps
 /-- The vertices `u` and `v` lie in a common cluster of `P`. -/
 def CoClustered (P : Clustering V) (u v : V) : Prop := ∃ c ∈ P.parts, u ∈ c ∧ v ∈ c
 
-instance (P : Clustering V) (u v : V) : Decidable (CoClustered P u v) := by
-  unfold CoClustered; infer_instance
+instance (P : Clustering V) (u v : V) : Decidable (CoClustered P u v) :=
+  inferInstanceAs (Decidable (∃ c ∈ P.parts, u ∈ c ∧ v ∈ c))
 
 /-- The entry `b` of the contingency table of Fig. 10: the pairs in the same cluster of `P` and in
 different clusters of `Q`. -/
@@ -104,17 +104,19 @@ def ofLabels {L : Type*} [DecidableEq L] (f : V → L) : Clustering V :=
   Finpartition.ofSetoid (Setoid.ker f)
 
 /-- The clustering `C` after the vertex `v` moves to the cluster `c'`: the vertex `v` gets the label
-`c'`, and every other vertex keeps the cluster it had in `C` as its label. -/
+`c'`, and every other vertex keeps the cluster it had in `C` as its label. This is meant for a cluster
+`c'` of `C`; if `c'` is not one, the label is new, and `v` becomes a singleton. -/
 def moveVertex (C : Clustering V) (v : V) (c' : Finset V) : Clustering V :=
   ofLabels (Function.update C.part v c')
 
-/-- `C_v`: the clusters of `C` in which `v` has at least one neighbour in the graph `G`. -/
+/-- `C_v`: the clusters of `C` in which `v` has at least one neighbour in the graph `G`. It may contain
+the current cluster of `v`, for which `ΔD = 0`. -/
 def candidateClusters (G : SimpleGraph V) [DecidableRel G.Adj] (C : Clustering V) (v : V) :
     Finset (Finset V) :=
   {c ∈ C.parts | ∃ u ∈ c, G.Adj v u}
 
 /-- **Eq. (6).** `c'` is a value of `c*(v) = argmin_{c' ∈ C_v} ΔD_{v : c → c'}`, where `c` is the
-current cluster of `v`. -/
+current cluster of `v`. The minimizer need not be unique, and it does not exist when `C_v` is empty. -/
 def IsBestMove (G : SimpleGraph V) [DecidableRel G.Adj] (Ps : Fin k → Clustering V)
     (C : Clustering V) (v : V) (c' : Finset V) : Prop :=
   c' ∈ candidateClusters G C v ∧
@@ -163,8 +165,8 @@ def figureEdges : List (Fin 12 × Fin 12) :=
 /-- The graph of Figs. 1 and 2. -/
 def figureGraph : SimpleGraph (Fin 12) := SimpleGraph.fromRel fun a b => (a, b) ∈ figureEdges
 
-instance : DecidableRel figureGraph.Adj := by
-  unfold figureGraph; infer_instance
+instance : DecidableRel figureGraph.Adj :=
+  inferInstanceAs (DecidableRel (SimpleGraph.fromRel fun a b => (a, b) ∈ figureEdges).Adj)
 
 /-- The consensus clustering `C = {c₁, c₂, c₃, c₄}` of Fig. 2, labelling `c_j` by `j`. -/
 def figureConsensus : Clustering (Fin 12) :=

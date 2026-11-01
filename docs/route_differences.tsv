@@ -1,0 +1,3 @@
+# label	difference	reason
+# The route check compares the routes of paper_routes.tsv with those of the Lean proofs.
+*	+eqn:rxyi	The paper uses the values 0 and 1 of the co-clustering distance throughout, without citing Eq. (2).

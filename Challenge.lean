@@ -13,15 +13,14 @@ public import Mathlib.Order.Setoid.Basic
 /-!
 # Parallel median consensus clustering in complex networks: the statements of record
 
-This file states the mathematical results of Hussain, Halappanavar, Chatterjee, Radicchi, Fortunato
+This file states the main mathematical results of Hussain, Halappanavar, Chatterjee, Radicchi, Fortunato
 and Azad, *Parallel median consensus clustering in complex networks*, Sci. Rep. 15, 3788 (2025),
 doi:10.1038/s41598-025-87479-6. The paper has no numbered theorems. Its mathematics is in Eqs. (1)-(7),
-the derivations in its appendix, the worked example of Figs. 1 and 2, and some claims in running
-text. Its experiments are not formalized.
+the derivations in its appendix, the worked example of Figs. 1 and 2, and some claims in running text.
 
 **The problem.** Given partitions `P₁, …, P_k` of a vertex set, a median partition minimizes
-`∑_i d(C, P_i)`, for the Mirkin distance `d(P, Q)`, the number of pairs of vertices clustered together
-in one of `P`, `Q` and not in the other.
+`∑_i d(C, P_i)` over all partitions `C`, for the Mirkin distance `d(P, Q)`, the number of pairs of
+vertices clustered together in one of `P`, `Q` and not in the other.
 
 * `equation2`, `equation3`: the co-clustering distance `δ_uv(P)` is a product over the clusters, with
   value `0` or `1`; the total `δ_uv` counts the input partitions that separate `u` and `v`.
@@ -31,34 +30,46 @@ in one of `P`, `Q` and not in the other.
 * `appendix_identity`, `equation4`, `equation1`: the derivation of the objective of Eq. (4), and the
   existence of median partitions.
 
-**The algorithm.** Starting from the singletons, a vertex moves to a cluster containing a neighbour
-in a graph `G`, when this decreases the objective.
+**The algorithm.** Starting from the singletons, a vertex moves to a cluster containing a neighbour in a
+graph `G`, when this decreases the objective. The graph and the input partitions are unrelated by
+hypothesis, as in the paper.
 
-* `moveVertex_of_ne`, `moveVertex_self`: what a move does.
+* `moveVertex_of_ne`, `moveVertex_self`: what a move to a cluster does.
 * `equation5`, `moveVertex_reduces`: the objective changes by exactly `ΔD`, and a negative `ΔD` reduces
   the total distance.
 * `equation6`, `not_canMove_iff`: the best move of a vertex, and the stopping condition.
-* `greedyStep_wellFounded`, `exists_stable`, `greedy_run_length_le`: moves made one at a time stop, in
-  at most `k n (n - 1)` moves.
-* `greedy_not_optimal`: the algorithm can stop at a partition that is not a median.
+* `greedyStep_wellFounded`, `exists_stable`, `greedy_run_length_le`: moves made one at a time stop, in at
+  most `k n (n - 1) / 2` moves. The paper does not state this; its stopping condition needs it.
+* `greedy_not_optimal`: the algorithm can stop only at partitions that are not medians.
 * `card_potentialMoves_le`: an iteration has at most `2 m̂` potential moves.
-* `figure1`, `figure2`: the paper's worked example, computed from these definitions. They show that
-  the definitions are the intended ones.
+* `figure1`, `figure2`: the paper's worked example, computed from these definitions. They show that the
+  definitions are consistent with the paper's own computation.
 
 **Conventions.**
 
 * A partition is a `Finpartition (univ : Finset V)`.
 * The sums `∑_uv` of the paper are over unordered pairs of distinct vertices, listed once each as
-  `(u, v)` with `u < v`. The appendix's `d = b + c` then has this count, and `∑_uv` in Eqs. (4) and (7)
-  agree with it. The order on `V` only names the pairs: `card_ordered_disagreements` counts the
-  disagreements without it. The paper's Methods section counts each pair twice, a factor of `2`.
-* The sum `∑_u` of Eq. (5) is over `u ≠ v`. The paper's Fig. 2 and its authors' code compute it so; with
-  `u = v` included, it would be larger by `k` (`figure2` shows the intended value).
+  `(u, v)` with `u < v`. The appendix's `d = b + c` is then this count, and Fig. 2's "reduces the total
+  distance by 4" holds. The order on `V` only names the pairs: `card_ordered_disagreements` counts the
+  disagreements without it. The paper's Methods section says that the distance "counts (twice)" the
+  pairs, which is the count over ordered pairs and the Mirkin metric of the literature.
+* The sum `∑_u` of Eq. (5) is over `u ≠ v`. The paper's Fig. 2 and its authors' code compute it so. With
+  `u = v` included it would be larger by `k` whenever `v ∈ c` and `v ∉ c'`, and Fig. 2's move would have
+  `ΔD = 0`.
 * Eq. (3) prints `P_k` in the summand, for `P_i`, a misprint.
 * The clustering after a move is defined through labels: `v` gets the label `c'`, and every other vertex
-  keeps its old cluster as its label. `moveVertex_of_ne` and `moveVertex_self` characterize it.
+  keeps its old cluster as its label. `moveVertex_of_ne` and `moveVertex_self` characterize it when `c'`
+  is a cluster, which is why `equation5` and `moveVertex_reduces` assume so.
+* `C_v` may contain the current cluster of `v`, with `ΔD = 0`, so `IsBestMove` may pick it; such a pick is
+  not a move, since a move needs `ΔD < 0`.
 * `GreedyStep` is one move at a time. The paper's iteration performs all the moves together, after
   "validation checks" that it does not specify. That version is not stated here.
+
+**Not stated here, but proved in the library.** The Hamming description of `δ_uv`; the Rand distance and
+the split-join distance; the grouping of homogeneous partitions; the iteration without validation checks;
+the role of the order of the moves; the bounds on the cost of an iteration; the claims that the
+formalization corrects. `REPORT.md` lists them, with what is not formalized: the experiments, the
+NP-completeness of the problem, and the variation of information.
 -/
 
 @[expose] public section
@@ -93,8 +104,8 @@ def deltaTotal (Ps : Fin k → Clustering V) (u v : V) : ℤ := ∑ i, delta (Ps
 /-- The vertices `u` and `v` lie in a common cluster of `P`. -/
 def CoClustered (P : Clustering V) (u v : V) : Prop := ∃ c ∈ P.parts, u ∈ c ∧ v ∈ c
 
-instance (P : Clustering V) (u v : V) : Decidable (CoClustered P u v) := by
-  unfold CoClustered; infer_instance
+instance (P : Clustering V) (u v : V) : Decidable (CoClustered P u v) :=
+  inferInstanceAs (Decidable (∃ c ∈ P.parts, u ∈ c ∧ v ∈ c))
 
 /-- The entry `b` of the contingency table of Fig. 10: the pairs in the same cluster of `P` and in
 different clusters of `Q`. -/
@@ -136,17 +147,19 @@ def ofLabels {L : Type*} [DecidableEq L] (f : V → L) : Clustering V :=
   Finpartition.ofSetoid (Setoid.ker f)
 
 /-- The clustering `C` after the vertex `v` moves to the cluster `c'`: the vertex `v` gets the label
-`c'`, and every other vertex keeps the cluster it had in `C` as its label. -/
+`c'`, and every other vertex keeps the cluster it had in `C` as its label. This is meant for a cluster
+`c'` of `C`; if `c'` is not one, the label is new, and `v` becomes a singleton. -/
 def moveVertex (C : Clustering V) (v : V) (c' : Finset V) : Clustering V :=
   ofLabels (Function.update C.part v c')
 
-/-- `C_v`: the clusters of `C` in which `v` has at least one neighbour in the graph `G`. -/
+/-- `C_v`: the clusters of `C` in which `v` has at least one neighbour in the graph `G`. It may contain
+the current cluster of `v`, for which `ΔD = 0`. -/
 def candidateClusters (G : SimpleGraph V) [DecidableRel G.Adj] (C : Clustering V) (v : V) :
     Finset (Finset V) :=
   {c ∈ C.parts | ∃ u ∈ c, G.Adj v u}
 
 /-- **Eq. (6).** `c'` is a value of `c*(v) = argmin_{c' ∈ C_v} ΔD_{v : c → c'}`, where `c` is the
-current cluster of `v`. -/
+current cluster of `v`. The minimizer need not be unique, and it does not exist when `C_v` is empty. -/
 def IsBestMove (G : SimpleGraph V) [DecidableRel G.Adj] (Ps : Fin k → Clustering V)
     (C : Clustering V) (v : V) (c' : Finset V) : Prop :=
   c' ∈ candidateClusters G C v ∧
@@ -195,8 +208,8 @@ def figureEdges : List (Fin 12 × Fin 12) :=
 /-- The graph of Figs. 1 and 2. -/
 def figureGraph : SimpleGraph (Fin 12) := SimpleGraph.fromRel fun a b => (a, b) ∈ figureEdges
 
-instance : DecidableRel figureGraph.Adj := by
-  unfold figureGraph; infer_instance
+instance : DecidableRel figureGraph.Adj :=
+  inferInstanceAs (DecidableRel (SimpleGraph.fromRel fun a b => (a, b) ∈ figureEdges).Adj)
 
 /-- The consensus clustering `C = {c₁, c₂, c₃, c₄}` of Fig. 2, labelling `c_j` by `j`. -/
 def figureConsensus : Clustering (Fin 12) :=
@@ -251,7 +264,8 @@ theorem mirkin_isMetric :
         ∀ P Q R : Clustering V, mirkin P R ≤ mirkin P Q + mirkin Q R := by
   sorry
 
-/-- Counting ordered pairs, as the paper's Methods section does, gives `2 d(P, Q)`. -/
+/-- Counting ordered pairs gives `2 d(P, Q)`, which accounts for the "(twice)" of the paper's Methods
+section. -/
 theorem card_ordered_disagreements (P Q : Clustering V) :
     #{p ∈ (univ : Finset V).offDiag | ¬(CoClustered P p.1 p.2 ↔ CoClustered Q p.1 p.2)} =
       2 * mirkin P Q := by
@@ -328,17 +342,19 @@ theorem exists_stable (G : SimpleGraph V) [DecidableRel G.Adj] (Ps : Fin k → C
     ∃ C, Relation.ReflTransGen (GreedyStep G Ps) C₀ C ∧ ¬CanMove G Ps C := by
   sorry
 
-/-- A sequence of greedy moves has at most `k n (n - 1)` moves. -/
+/-- A sequence of greedy moves has at most `k n (n - 1) / 2` moves. -/
 theorem greedy_run_length_le (G : SimpleGraph V) [DecidableRel G.Adj] {Ps : Fin k → Clustering V}
     {s : ℕ → Clustering V} {m : ℕ} (h : ∀ i < m, GreedyStep G Ps (s i) (s (i + 1))) :
-    m ≤ k * (Fintype.card V * (Fintype.card V - 1)) := by
+    2 * m ≤ k * (Fintype.card V * (Fintype.card V - 1)) := by
   sorry
 
 /-- "This greedy moving policy … does not guarantee an optimal solution": on the complete graph on four
-vertices, a run from the singletons stops at a partition that is not a median partition. -/
+vertices, with three input partitions, runs from the singletons stop, and every partition at which a run
+stops fails to be a median partition. -/
 theorem greedy_not_optimal :
-    ∃ (Ps : Fin 3 → Clustering (Fin 4)) (C : Clustering (Fin 4)),
-      Relation.ReflTransGen (GreedyStep ⊤ Ps) ⊥ C ∧ ¬CanMove ⊤ Ps C ∧ ¬IsMedian Ps C := by
+    ∃ Ps : Fin 3 → Clustering (Fin 4),
+      (∃ C, Relation.ReflTransGen (GreedyStep ⊤ Ps) ⊥ C ∧ ¬CanMove ⊤ Ps C) ∧
+        ∀ C, Relation.ReflTransGen (GreedyStep ⊤ Ps) ⊥ C → ¬CanMove ⊤ Ps C → ¬IsMedian Ps C := by
   sorry
 
 /-- "If there are `m̂` inter-cluster edges, the number of potential moves is at most `2 m̂`." -/

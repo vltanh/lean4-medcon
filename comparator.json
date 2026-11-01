@@ -1,0 +1,36 @@
+{
+  "challenge_module": "Challenge",
+  "solution_module": "Solution",
+  "theorem_names": [
+    "MedianConsensus.Challenge.equation2",
+    "MedianConsensus.Challenge.equation3",
+    "MedianConsensus.Challenge.equation7",
+    "MedianConsensus.Challenge.mirkin_eq_card_symmDiff",
+    "MedianConsensus.Challenge.mirkin_isMetric",
+    "MedianConsensus.Challenge.card_ordered_disagreements",
+    "MedianConsensus.Challenge.sum_sq_parts_add_sum_sq_parts",
+    "MedianConsensus.Challenge.appendix_identity",
+    "MedianConsensus.Challenge.equation4",
+    "MedianConsensus.Challenge.equation1",
+    "MedianConsensus.Challenge.moveVertex_of_ne",
+    "MedianConsensus.Challenge.moveVertex_self",
+    "MedianConsensus.Challenge.equation5",
+    "MedianConsensus.Challenge.moveVertex_reduces",
+    "MedianConsensus.Challenge.equation6",
+    "MedianConsensus.Challenge.not_canMove_iff",
+    "MedianConsensus.Challenge.greedyStep_wellFounded",
+    "MedianConsensus.Challenge.exists_stable",
+    "MedianConsensus.Challenge.greedy_run_length_le",
+    "MedianConsensus.Challenge.greedy_not_optimal",
+    "MedianConsensus.Challenge.card_potentialMoves_le",
+    "MedianConsensus.Challenge.figure1",
+    "MedianConsensus.Challenge.figure2"
+  ],
+  "definition_names": [],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "enable_nanoda": true
+}
