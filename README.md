@@ -1,5 +1,7 @@
 # Median consensus clustering in Lean
 
+[![Lean Action CI](https://github.com/vltanh/lean4-medcon/actions/workflows/lean_action_ci.yml/badge.svg)](https://github.com/vltanh/lean4-medcon/actions/workflows/lean_action_ci.yml)
+
 A Lean 4 formalization of the mathematics of Md Taufique Hussain, Mahantesh Halappanavar, Samrat Chatterjee, Filippo
 Radicchi, Santo Fortunato and Ariful Azad, *Parallel median consensus clustering in complex networks*,
 [Scientific Reports 15, 3788 (2025)](https://doi.org/10.1038/s41598-025-87479-6). Given partitions `P₁, …, P_k` of the vertices
