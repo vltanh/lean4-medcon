@@ -42,6 +42,8 @@ PREFERRED_MODULE = 'Challenge'
 # Directories, besides the repository root, against which the paths in the documents of a
 # given directory are resolved.
 PATH_BASES = {'': ['.github/workflows']}
+# Files that a document may name but that are not in the repository, so they never become links.
+PRIVATE = {'NEXT.md'}
 # ---------------------------------------------------------------------------------------------
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -116,6 +118,8 @@ class Linker:
         return '%s#L%d' % (module_file(module), line)
 
     def target(self, text, doc_dir):
+        if text in PRIVATE:
+            return None
         """The repository path or URL that `text` names, or None."""
         path = text.rstrip('/')
         if path and not path.startswith(('/', '.')) and ' ' not in path:
