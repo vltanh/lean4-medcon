@@ -118,9 +118,9 @@ class Linker:
         return '%s#L%d' % (module_file(module), line)
 
     def target(self, text, doc_dir):
+        """The repository path or URL that `text` names, or None."""
         if text in PRIVATE:
             return None
-        """The repository path or URL that `text` names, or None."""
         path = text.rstrip('/')
         if path and not path.startswith(('/', '.')) and ' ' not in path:
             for base in [''] + PATH_BASES.get(doc_dir, []):
