@@ -136,7 +136,8 @@ theorem iterationCost_eq {C : Clustering V} {s : ℕ} (hs : ∀ c ∈ C.parts, #
 
 /-- **Computation and memory complexity** (`claim:iteration-cost`). The bound `O(m̂ n k_h / b)`, with
 its constant, for clusters of equal size: the cost of an iteration satisfies
-`cost · b ≤ 4 m̂ n k_h`. -/
+`cost · b ≤ 4 m̂ n k_h`. The proof is the paper's: at most `2 m̂` potential moves, at a cost of `2 (n / b) k_h`
+each. -/
 theorem iterationCost_mul_parts_le {C : Clustering V} {s : ℕ} (hs : ∀ c ∈ C.parts, #c = s) (k : ℕ) :
     iterationCost G C k * #C.parts ≤ 4 * #(interEdges G C) * Fintype.card V * k := by
   have hb := card_parts_mul_of_equal_size hs
@@ -167,7 +168,8 @@ theorem iterationCost_le_quadratic {C : Clustering V} {s : ℕ} (hs : ∀ c ∈ 
 /-- **Computation and memory complexity** (`claim:large-clusters`). "Large clusters having many
 inter-cluster edges may enhance the computational cost": the quadratic bound fails without equal sizes.
 On the complete graph on `10` vertices, with one cluster of `7` and three singletons, and `k_h = 1`, the
-cost is `204`, against `2 n² k_h = 200`. -/
+cost is `204`, against `2 n² k_h = 200`. The excess grows: with `40 + 40` vertices the cost is cubic in
+order, at `70360` against `12800`. -/
 theorem iterationCost_large_cluster :
     2 * 10 ^ 2 * 1 <
       iterationCost (⊤ : SimpleGraph (Fin 10))
@@ -384,16 +386,61 @@ theorem reachable_halves :
   obtain ⟨D, hrun, hstable⟩ := exists_stable (G := ⊤) (fun _ : Fin 1 => halves s) ⊥
   rwa [eq_halves_of_stable (hpure D hrun) hstable] at hrun
 
+/-- On the complete graph, every vertex has exactly one potential move at the two halves: to the other
+half. -/
+theorem card_potentialMoves_halves : #(potentialMoves ⊤ (halves s)) = 2 * s := by
+  have himage : potentialMoves ⊤ (halves s) =
+      (univ : Finset (Fin (2 * s))).image fun v => (v, halfSet s (!halfSide s v)) := by
+    ext ⟨v, c'⟩
+    simp only [mem_image, mem_univ, true_and, Prod.mk.injEq]
+    constructor
+    · intro hm
+      obtain ⟨hprod, hcand, hne⟩ := mem_filter.1 hm
+      have hc' : c' ∈ (halves s).parts := (mem_product.1 hprod).2
+      rw [parts_halves hs, mem_insert, mem_singleton] at hc'
+      have hpart := part_halves v
+      refine ⟨v, rfl, ?_⟩
+      simp only at hne
+      cases hv : halfSide s v <;> rcases hc' with rfl | rfl <;> simp_all
+    · rintro ⟨v', rfl, rfl⟩
+      have hother : ∃ u : Fin (2 * s), halfSide s u = !halfSide s v' := by
+        cases hv : halfSide s v'
+        · exact ⟨⟨0, by omega⟩, by simp [halfSide, hs]⟩
+        · exact ⟨⟨s, by omega⟩, by simp [halfSide]⟩
+      obtain ⟨u, hu⟩ := hother
+      have hpartu : (halves s).part u = halfSet s (!halfSide s v') := by rw [part_halves, hu]
+      have hne : u ≠ v' := by
+        rintro rfl
+        cases hv : halfSide s u <;> simp [hv] at hu
+      refine mem_filter.2 ⟨mem_product.2 ⟨mem_univ _, ?_⟩, ?_, ?_⟩
+      · rw [← hpartu]
+        exact (halves s).part_mem.2 (mem_univ _)
+      · exact (mem_candidateClusters_iff _ _ _ _).2 ⟨u, hne.symm, hpartu.symm⟩
+      · change halfSet s (!halfSide s v') ≠ (halves s).part v'
+        rw [part_halves]
+        intro h
+        have hmem : v' ∈ halfSet s (halfSide s v') := by simp [halfSet]
+        rw [← h] at hmem
+        cases hv : halfSide s v' <;> simp [halfSet, hv] at hmem
+  rw [himage, card_image_of_injective _ fun a b h => (Prod.mk.inj h).1, card_univ, Fintype.card_fin]
+
+/-- The cost of an iteration at the two halves is exactly `n² k_h`, so the quadratic bound
+`iterationCost_le_quadratic` is attained up to a factor of `2`. -/
+theorem iterationCost_halves (k : ℕ) :
+    iterationCost ⊤ (halves s) k = (2 * s) ^ 2 * k := by
+  rw [iterationCost_eq ⊤ (fun _ hc => card_of_mem_parts_halves hs hc), card_potentialMoves_halves hs]
+  ring
+
 end Halves
 
-/-- **Computation and memory complexity** (`claim:both-conditions`). The paper says that `m̂` very high
-and `b` very low "cannot occur simultaneously" for same-size clusters, since "we start from singleton
-clusters". They can, in a state that the algorithm reaches. On the complete graph on `n = 2 s` vertices,
-with the two halves as the one input, a run from the singletons reaches the two halves, where `b = 2`
-and `m̂ = s² = n² / 4`. Then the paper's `O(m̂ n k_h / b)` is `n³ k_h / 8`, an overestimate: the bound
-`iterationCost_le_quadratic` holds there, since an iteration has only `n (b - 1)` potential moves. So
-the paper's conclusion that the cost stays at most quadratic for same-size clusters holds, for another
-reason. -/
+/-- **Computation and memory complexity** (`claim:both-conditions`). The paper raises the worry that the
+cost "can be as high as `O(n²)` if `m̂` is very high and `b` is very low", and answers that for same-size
+clusters "both of those conditions cannot occur simultaneously". They can, in a state that the algorithm
+reaches. On the complete graph on `n = 2 s` vertices, with the two halves as the one input, a run from the
+singletons reaches the two halves, where `b = 2` and `m̂ = s² = n² / 4`. There the cost is exactly `n² k_h`
+(`iterationCost_halves`), so the paper's reassurance fails. Only an upper bound survives, `2 n² k_h` for
+same-size clusters (`iterationCost_le_quadratic`), and the paper's formula `O(m̂ n k_h / b)` overestimates
+there, at `n³ k_h / 8`, since an iteration has only `n (b - 1)` potential moves. -/
 theorem both_conditions_occur (s : ℕ) (hs : 0 < s) :
     ∃ C : Clustering (Fin (2 * s)),
       #C.parts = 2 ∧ (∀ c ∈ C.parts, #c = s) ∧ #(interEdges ⊤ C) = s ^ 2 ∧

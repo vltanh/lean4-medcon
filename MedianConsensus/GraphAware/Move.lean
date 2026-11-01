@@ -156,7 +156,12 @@ theorem deltaD_self (Ps : Fin k → Clustering V) (v : V) (c : Finset V) : delta
 
 /-- **Equation (5)** (`eq:objective3`). "The change in the objective function": when `v` moves from
 its cluster `c` to a cluster `c'`, the objective of Eq. (4) changes by exactly `ΔD_{v : c → c'}`,
-which is given by either side of Eq. (5). -/
+which is given by either side of Eq. (5).
+
+Departure from the paper: the appendix asserts the change as its first line, and the rest of its
+derivation is algebra. The proof shows the change directly, from the pairs that contain `v`, for the first
+form of Eq. (5), and the appendix's first line is `deltaD_eq_sum_sub_sum`. This repairs a gap (`REPORT.md`,
+E11), since the paper gives no argument to follow at this step. -/
 theorem equation5 (Ps : Fin k → Clustering V) (C : Clustering V) (v : V) {c' : Finset V}
     (hc' : c' ∈ C.parts) :
     objective Ps (moveVertex C v c') - objective Ps C = deltaD Ps v (C.part v) c' ∧

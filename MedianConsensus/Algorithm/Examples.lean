@@ -78,16 +78,65 @@ theorem greedy_not_optimal :
 /-- **Methods** (`claim:order-dependence`). "The order in which vertices are moved influences the set
 of potential moves for `v`." On the path `0 - 1 - 2`, with one input partition that puts all the
 vertices together, `C_2` is `{{1}}` at the start. After `1` moves to `{0}`, a greedy move, it is
-`{{0, 1}}`. -/
+`{{0, 1}}`. Yet every run here stops at a median partition, so the paper's premise does not imply its
+conclusion that the policy "does not guarantee an optimal solution". -/
 theorem order_influences_candidates :
     ∃ (G : SimpleGraph (Fin 3)) (_ : DecidableRel G.Adj) (Ps : Fin 1 → Clustering (Fin 3)),
       GreedyStep G Ps ⊥ (moveVertex ⊥ 1 {0}) ∧ candidateClusters G ⊥ 2 = {{1}} ∧
-        candidateClusters G (moveVertex ⊥ 1 {0}) 2 = {{0, 1}} := by
+        candidateClusters G (moveVertex ⊥ 1 {0}) 2 = {{0, 1}} ∧
+          ∀ C, Relation.ReflTransGen (GreedyStep G Ps) ⊥ C → ¬CanMove G Ps C → IsMedian Ps C := by
   let G : SimpleGraph (Fin 3) :=
     SimpleGraph.fromRel fun a b => (a, b) ∈ ([(0, 1), (1, 2)] : List (Fin 3 × Fin 3))
-  let Ps : Fin 1 → Clustering (Fin 3) := ![ofLabels (![0, 0, 0] : Fin 3 → Fin 1)]
-  exact ⟨G, inferInstance, Ps, ⟨1, {0}, by decide +kernel, by decide +kernel, rfl⟩,
-    by decide +kernel, by decide +kernel⟩
+  let top : Clustering (Fin 3) := ofLabels (![0, 0, 0] : Fin 3 → Fin 1)
+  let Ps : Fin 1 → Clustering (Fin 3) := ![top]
+  let C₁ : Clustering (Fin 3) := ofLabels (![0, 0, 1] : Fin 3 → Fin 2)
+  let C₂ : Clustering (Fin 3) := ofLabels (![0, 1, 1] : Fin 3 → Fin 2)
+  let R : List (Clustering (Fin 3)) := [⊥, C₁, C₂, top]
+  let L : Fin 3 → Fin 3 → Bool := fun a b => (a == 1 && b != 1) || (b == 1 && a != 1)
+  have hL : ∀ v u, G.Adj v u → L v u = true := by decide +kernel
+  have hL' : ∀ v u, L v u = true → G.Adj v u := by decide +kernel
+  let good : Clustering (Fin 3) → Prop := fun C => ∀ v u : Fin 3, L v u = true →
+    (∀ w, L v w = true → deltaD Ps v (C.part v) (C.part u) ≤ deltaD Ps v (C.part v) (C.part w)) →
+      deltaD Ps v (C.part v) (C.part u) < 0 → moveVertex C v (C.part u) ∈ R
+  have hgood : ∀ C ∈ R, good C := by
+    intro C hC
+    simp only [R, List.mem_cons, List.not_mem_nil, or_false] at hC
+    rcases hC with rfl | rfl | rfl | rfl
+    · change ∀ v u : Fin 3, _
+      decide +kernel
+    · change ∀ v u : Fin 3, _
+      decide +kernel
+    · change ∀ v u : Fin 3, _
+      decide +kernel
+    · change ∀ v u : Fin 3, _
+      decide +kernel
+  have hreach : ∀ C, Relation.ReflTransGen (GreedyStep G Ps) ⊥ C → C ∈ R := by
+    intro C h
+    induction h with
+    | refl => exact List.mem_cons_self
+    | tail _ h ih =>
+      obtain ⟨v, c', hbest, hneg, rfl⟩ := h
+      obtain ⟨u, hu, rfl⟩ := (mem_candidateClusters_iff _ _ v c').1 hbest.1
+      refine hgood _ ih v u (hL _ _ hu) (fun w hw => hbest.2 _ ?_) hneg
+      exact (mem_candidateClusters_iff _ _ v _).2 ⟨w, hL' _ _ hw, rfl⟩
+  have hstop : ∀ C ∈ R, (∀ v, ∀ c' ∈ candidateClusters G C v, 0 ≤ deltaD Ps v (C.part v) c') →
+      C = top := by
+    intro C hC hstable
+    simp only [R, List.mem_cons, List.not_mem_nil, or_false] at hC
+    rcases hC with rfl | rfl | rfl | rfl
+    · exact absurd (hstable 0 {1} (by decide +kernel)) (by decide +kernel)
+    · exact absurd (hstable 2 {0, 1} (by decide +kernel)) (by decide +kernel)
+    · exact absurd (hstable 0 {1, 2} (by decide +kernel)) (by decide +kernel)
+    · rfl
+  have hmed : IsMedian Ps top := fun C' => by
+    have h0 : totalDistance Ps top = 0 := by decide +kernel
+    rw [h0]
+    exact Nat.zero_le _
+  refine ⟨G, inferInstance, Ps, ⟨1, {0}, by decide +kernel, by decide +kernel, rfl⟩,
+    by decide +kernel, by decide +kernel, fun C hrun hstable => ?_⟩
+  have hC := hstop C (hreach C hrun) ((not_canMove_iff _ _ _).1 hstable)
+  rw [hC]
+  exact hmed
 
 /-- A greedy move in which the best move of the moved vertex is unique: no tie is broken. -/
 def UniqueGreedyStep {V : Type*} [Fintype V] [LinearOrder V] {k : ℕ} (G : SimpleGraph V)

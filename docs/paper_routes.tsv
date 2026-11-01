@@ -14,8 +14,9 @@ eqn:rxyi	equation	0
 eq:total-delta	equation	0	
 # Fig. 1 caption, published version.
 claim:hamming	claim	0	
-# Eq. (7): the appendix derives it from `|A △ B| = |A| + |B| - 2 |A ∩ B|` and the values of δ.
-eqx:distance	equation	1	eqn:rxyi
+# Eq. (7): the appendix derives it from `|A △ B| = |A| + |B| - 2 |A ∩ B|`, and cites nothing. It uses the
+# values of δ throughout, as recorded in route_differences.tsv.
+eqx:distance	equation	1	
 # "This distance is a metric": stated in the appendix without proof.
 claim:mirkin-metric	claim	0	
 # "counts (twice)": stated in the Methods without proof.
@@ -31,8 +32,8 @@ claim:intra-inter	claim	0
 # objective of Eq. (4), which is the definition `objective` here, and not to the argmin statement
 # that `equation4` proves.
 eq:objective3	equation	1	
-# "When ΔD is negative, moving v reduces the overall disagreements": from Eq. (5) and the chain.
-claim:negative-reduces	claim	1	eq:objective3,eq:appendix-identity
+# "When ΔD is negative, moving v reduces the overall disagreements": one sentence, with no derivation.
+claim:negative-reduces	claim	0	
 # Eq. (6) is a definition; `equation6` adds when the argmin exists.
 eq:objective4	equation	0	
 # The stopping condition is part of the algorithm.
@@ -45,16 +46,19 @@ claim:greedy-not-optimal	claim	0
 claim:order-dependence	claim	0	
 # Section "Parallel algorithm": no proof.
 claim:batch	claim	0	
-# Section "Computation and memory complexity" and the end of "Graph-aware consensus clustering".
+# Section "Computation and memory complexity" and the end of "Graph-aware consensus clustering". The
+# bound on the cost is derived on p. 6 ("Hence"), from the number of potential moves.
 claim:pairs-count	claim	0	
 claim:moves-list	claim	0	
 claim:moves-at-most	claim	0	
 claim:moves-at-most-m	claim	0	
-claim:iteration-cost	claim	0	
+claim:iteration-cost	claim	1	claim:moves-at-most
 claim:large-clusters	claim	0	
 claim:both-conditions	claim	0	
 # Section "Grouping homogeneous partitions": no proof.
 claim:group-distances	claim	0	
+# The corrected form of the same claim, which is not in the paper.
+claim:group-distances-corrected	claim	0	
 # Section "Results", "Grouping homogeneous partitions": an observation about the experiments, which
 # holds in general in its weak form.
 claim:groups-decrease	claim	0	

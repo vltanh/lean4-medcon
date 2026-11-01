@@ -11,7 +11,9 @@ partitions of the set (`External.VanDongen.splitJoin_isMetric`).
 (`External.VanDongen.projection_add_projection_le`), for which one chooses a best cluster of `B` for
 each cluster of `A`, and a best cluster of `C` for each cluster of `B`, and counts the vertices that
 leave. If `p_P(Q) = n`, every cluster of `P` lies in one of `Q`, which gives the identity of
-indiscernibles.
+indiscernibles. This is not van Dongen's proof, which shows that the distance is a shortest path where a
+split or a join costs the size of the smaller part. The direct count is shorter here, and the source's
+statement is the same.
 
 **How the paper uses it.** The section "Grouping homogeneous partitions" weights a complete graph on
 the input partitions by this distance, and the section "Evaluation metrics" evaluates results with it.

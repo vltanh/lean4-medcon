@@ -57,7 +57,12 @@ theorem mirkin_eq_card_symmDiff_sepPairs (P Q : Clustering V) :
   tauto
 
 /-- **Equation (7)** (`eqx:distance`).
-`d(P, Q) = b + c = ∑_{uv} (δ_uv(P) + δ_uv(Q) - 2 δ_uv(P) δ_uv(Q))`. -/
+`d(P, Q) = b + c = ∑_{uv} (δ_uv(P) + δ_uv(Q) - 2 δ_uv(P) δ_uv(Q))`.
+
+Departure from the paper: the appendix speaks of the sets of co-clustered pairs, but the identity for
+`|A △ B|` gives Eq. (7) only for the sets that `δ` indicates, those of separated pairs. The proof applies
+it to these, through `mirkin_eq_card_symmDiff_sepPairs`. This repairs a gap in the paper's step (`REPORT.md`,
+E11); the argument is otherwise the paper's. -/
 theorem equation7 (P Q : Clustering V) :
     (mirkin P Q : ℤ) =
       ∑ p ∈ pairs V, (delta P p.1 p.2 + delta Q p.1 p.2 - 2 * delta P p.1 p.2 * delta Q p.1 p.2) := by

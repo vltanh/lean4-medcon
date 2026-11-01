@@ -94,6 +94,7 @@ meta def paperResults : List (String × Name) :=
    ("Large clusters", ``MedianConsensus.iterationCost_large_cluster),
    ("Both conditions", ``MedianConsensus.both_conditions_occur),
    ("Group distances", ``MedianConsensus.group_distances_counterexample_splitJoin),
+   ("Group distances, corrected", ``MedianConsensus.splitJoin_le_of_reachable),
    ("Groups decrease", ``MedianConsensus.card_components_antitone),
    ("Split-join and operations", ``MedianConsensus.splitJoin_one_split),
    ("Rand metric", ``MedianConsensus.randDistance_isMetric),

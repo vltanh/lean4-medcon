@@ -66,7 +66,8 @@ theorem dist_le_of_reachable (d : Clustering V → Clustering V → ℕ)
   omega
 
 open Classical in
-/-- `dist_le_of_reachable` for the split-join distance that the paper uses. -/
+/-- **Grouping homogeneous partitions** (`claim:group-distances-corrected`). `dist_le_of_reachable` for the
+split-join distance that the paper uses. -/
 theorem splitJoin_le_of_reachable (Ps : Fin k → Clustering V) (lam : ℕ) {i j : Fin k}
     (hij : (thresholdGraph External.VanDongen.splitJoin Ps lam).Reachable i j) :
     External.VanDongen.splitJoin (Ps i) (Ps j) ≤

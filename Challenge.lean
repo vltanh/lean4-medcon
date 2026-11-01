@@ -40,7 +40,7 @@ hypothesis, as in the paper.
 * `equation6`, `not_canMove_iff`: the best move of a vertex, and the stopping condition.
 * `greedyStep_wellFounded`, `exists_stable`, `greedy_run_length_le`: moves made one at a time stop, in at
   most `k n (n - 1) / 2` moves. The paper does not state this; its stopping condition needs it.
-* `greedy_not_optimal`: the algorithm can stop only at partitions that are not medians.
+* `greedy_not_optimal`: on one instance, the algorithm stops only at partitions that are not medians.
 * `card_potentialMoves_le`: an iteration has at most `2 m̂` potential moves.
 * `figure1`, `figure2`: the paper's worked example, computed from these definitions. They show that the
   definitions are consistent with the paper's own computation.
