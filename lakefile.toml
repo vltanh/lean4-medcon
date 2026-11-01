@@ -1,0 +1,32 @@
+name = "MedianConsensus"
+version = "0.1.0"
+keywords = ["math"]
+defaultTargets = ["Basic", "External", "MedianConsensus", "Challenge", "Solution"]
+
+[leanOptions]
+pp.unicode.fun = true
+autoImplicit = false
+maxSynthPendingDepth = 3
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.36.0-rc2"
+
+[[lean_lib]]
+name = "Basic"
+globs = ["Basic.+"]
+
+[[lean_lib]]
+name = "External"
+globs = ["External.+"]
+
+[[lean_lib]]
+name = "MedianConsensus"
+globs = ["MedianConsensus.+"]
+
+[[lean_lib]]
+name = "Challenge"
+
+[[lean_lib]]
+name = "Solution"
