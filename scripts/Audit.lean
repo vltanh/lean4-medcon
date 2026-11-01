@@ -1,3 +1,4 @@
+-- Adapted from formalize-math-paper (https://github.com/vltanh/formalize-math-paper), version 3.0.0, Apache-2.0.
 module
 
 public meta import Lean.Elab.Command

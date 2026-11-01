@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Adapted from formalize-math-paper (https://github.com/vltanh/formalize-math-paper), version 3.0.0, Apache-2.0.
 """Copy the shared definitions of a library module into `Challenge.lean`, or check the copy.
 
 Comparator requires every constant that a Challenge statement uses to be the same in the

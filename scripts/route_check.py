@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Adapted from formalize-math-paper (https://github.com/vltanh/formalize-math-paper), version 3.0.0, Apache-2.0.
 """Check that each formal proof follows the route of the paper's proof.
 
 The *route* of a proof is the set of numbered results of the paper that it uses. For the paper,

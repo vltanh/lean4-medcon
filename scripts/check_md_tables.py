@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Adapted from formalize-math-paper (https://github.com/vltanh/formalize-math-paper), version 3.0.0, Apache-2.0.
 """Check that every row of every Markdown table has as many cells as its header.
 
 usage: check_md_tables.py FILE.md... [--fix]

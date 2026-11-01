@@ -20,11 +20,11 @@ Status of the formalization:
 - The derivations of Eq. (4) from Eq. (1) and of Eq. (5) follow the paper's appendix, with two small repairs
   (Section 7). The paper cites no theorem in a proof, though its appendix follows a derivation of Filkov and
   Skiena without saying so (Section 2). The one cited fact that the formalization relies on, that the
-  split-join distance is a metric, is proved in `External/`.
+  split-join distance is a metric, is proved in [`External/`](External).
 - Nothing is assumed. The formalization is unconditional.
-- `lake build` succeeds with no `sorry` outside `Challenge.lean`, and no `axiom`. `scripts/Audit.lean` checks
-  that every declaration of the library depends only on `propext`, `Classical.choice` and `Quot.sound`.
-- `Challenge.lean` states the main results, `Solution.lean` proves them from the library, and Comparator
+- `lake build` succeeds with no `sorry` outside [`Challenge.lean`](Challenge.lean), and no `axiom`. [`scripts/Audit.lean`](scripts/Audit.lean) checks
+  that every declaration of the library depends only on [`propext`](https://leanprover-community.github.io/mathlib4_docs/Init/Core.html#propext), [`Classical.choice`](https://leanprover-community.github.io/mathlib4_docs/Init/Prelude.html#Classical.choice) and [`Quot.sound`](https://leanprover-community.github.io/mathlib4_docs/Init/Prelude.html#Quot.sound).
+- [`Challenge.lean`](Challenge.lean) states the main results, [`Solution.lean`](Solution.lean) proves them from the library, and Comparator
   accepts the solution under Lean's kernel and NanoDa.
 - Three formulas are read with a correction, all recorded below: the summand of Eq. (3), the range of the
   sum in Eq. (5), and the `≈` in the appendix. No other statement of the paper was changed. Claims that
@@ -58,7 +58,7 @@ Status of the formalization:
 
 | Result | Where the paper uses it | Source | Theorem in `External/` |
 | --- | --- | --- | --- |
-| The split-join distance is a metric | "Grouping homogeneous partitions"; "Evaluation metrics": "All three of these measures are true distance metrics" | van Dongen, [CWI report INS-R0012](https://ir.cwi.nl/pub/4461/04461D.pdf) (2000), Definition 12 and Theorem 4 | `External.VanDongen.splitJoin_isMetric`, by a direct count (`External.VanDongen.projection_add_projection_le`) and not by van Dongen's shortest-path argument |
+| The split-join distance is a metric | "Grouping homogeneous partitions"; "Evaluation metrics": "All three of these measures are true distance metrics" | van Dongen, [CWI report INS-R0012](https://ir.cwi.nl/pub/4461/04461D.pdf) (2000), Definition 12 and Theorem 4 | [`External.VanDongen.splitJoin_isMetric`](External/VanDongen/SplitJoin.lean#L149), by a direct count ([`External.VanDongen.projection_add_projection_le`](External/VanDongen/SplitJoin.lean#L51)) and not by van Dongen's shortest-path argument |
 
 ### Assumed
 
@@ -68,9 +68,9 @@ None.
 
 | Fact | Where | In the formalization |
 | --- | --- | --- |
-| `\|A △ B\| = \|A\| + \|B\| - 2 \|A ∩ B\|` | Appendix, for Eq. (7) | `Finset.card_symmDiff_add_two_mul_card_inter` |
-| The symmetric difference distance satisfies the triangle inequality | Appendix: "This distance is a metric" | `Finset.card_symmDiff_triangle` |
-| There are `n (n - 1) / 2` pairs | Complexity, "`k(k-1)/2` pairs" | `card_pairs` |
+| `\|A △ B\| = \|A\| + \|B\| - 2 \|A ∩ B\|` | Appendix, for Eq. (7) | [`Finset.card_symmDiff_add_two_mul_card_inter`](Basic/Data/Finset/SymmDiff.lean#L22) |
+| The symmetric difference distance satisfies the triangle inequality | Appendix: "This distance is a metric" | [`Finset.card_symmDiff_triangle`](Basic/Data/Finset/SymmDiff.lean#L32) |
+| There are `n (n - 1) / 2` pairs | Complexity, "`k(k-1)/2` pairs" | [`card_pairs`](MedianConsensus/Algorithm/Complexity.lean#L25) |
 
 ### Does the paper use each cited result correctly?
 
@@ -81,7 +81,7 @@ None.
 | Wakabayashi; Křivánek and Morávek (refs. 22, 23): NP-hardness | p. 2: exact optimization "is NP-Hard" | Correct for an unbounded number of input partitions, as later sources attribute it. These two were not read here. Ref. 22 is mislabelled: E12 |
 | Mirkin (ref. 21): the distance | pp. 2-3, appendix | Correct, up to the factor of `2`: E1 |
 | van Dongen (ref. 30): split-join | pp. 5, 8 | The metric property is correct, and proved here; the description is not: E10 |
-| Rand (ref. 52): Rand distance | p. 8 | Correct: `randDistance_eq_mirkin_div`, `randDistance_isMetric`. Rand (1971) itself was not read; Meilă (2007, Eq. (9)) gives this normalization |
+| Rand (ref. 52): Rand distance | p. 8 | Correct: [`randDistance_eq_mirkin_div`](MedianConsensus/Evaluation/Rand.lean#L57), [`randDistance_isMetric`](MedianConsensus/Evaluation/Rand.lean#L71). Rand (1971) itself was not read; Meilă (2007, Eq. (9)) gives this normalization |
 | Meilă (ref. 51): variation of information is a metric | p. 8 | Correct per Meilă (2007, Property 1), and not formalized here |
 
 The other citations give context and are used in no argument: the survey of consensus methods, the
@@ -108,10 +108,10 @@ The paper says that "minimizing equation (1) is equivalent to" this, without def
 its sentence "We call it the inter-cluster disagreements" has no clear antecedent. So the claim is undefined as
 written. On the one definition on record, in a passage commented out in the arXiv source, they are the sums of
 `δ_uv` over the pairs inside and between the clusters of `C`. Then the claim omits a term:
-`∑_i d(C, P_i)` equals `intra - inter + k · #(separated pairs)` (`totalDistance_eq_intra_sub_inter`). Without the
+`∑_i d(C, P_i)` equals `intra - inter + k · #(separated pairs)` ([`totalDistance_eq_intra_sub_inter`](MedianConsensus/Problem/Objective.lean#L99)). Without the
 term, the singleton partition minimizes the first quantity and maximizes the second for all inputs
-(`bot_minimizes_intra_maximizes_inter`), and it is not a median partition in general
-(`exists_bot_not_isMedian`). The arXiv source shows an earlier objective of exactly this form, commented out and
+([`bot_minimizes_intra_maximizes_inter`](MedianConsensus/Problem/Objective.lean#L121)), and it is not a median partition in general
+([`exists_bot_not_isMedian`](MedianConsensus/Problem/Objective.lean#L141)). The arXiv source shows an earlier objective of exactly this form, commented out and
 replaced. A kinder reading is possible: if "disagreement" means the signed quantity `2 δ_uv - k`, the factor
 printed in Eq. (5), the sentence is exactly true, since the total is then a constant minus the second quantity, and
 the two sum to a constant. Either way this concerns only the phrase. Eq. (4) is correct, and it contains the term.
@@ -126,25 +126,25 @@ partitions" (Bonizzoni, Della Vedova, Dondi and Jiang, [JCSS 74 (2008)](https://
 That paper's introduction speaks of any constant `k > 2`, but its proof treats `k = 3`, and the sources read in
 Section 10 contain no proof for any fixed `k ≥ 4`. So the claim may well be true, and it is unsupported as cited. Also, the
 size of a search space is not a hardness argument, and an optimization problem is not itself NP-complete. The easy
-cases are proved here: every input is a median for `k = 1, 2` (`isMedian_of_one`, `isMedian_of_two`). The method is
+cases are proved here: every input is a median for `k = 1, 2` ([`isMedian_of_one`](MedianConsensus/Problem/Objective.lean#L65), [`isMedian_of_two`](MedianConsensus/Problem/Objective.lean#L72)). The method is
 unaffected, since the claim only motivates a heuristic. The formalization does not state hardness (Section 9).
 
 **E4. Graph-aware consensus clustering, Eq. (5), p. 4, and appendix, p. 13: the sum includes `u = v`.** Eq. (5)
 sums over `u`, and `σ_v(c) = 1` for the current cluster `c` of `v`. Read literally, the term `u = v` adds
-`k - 2 δ_vv = k`, so the printed sum is `ΔD + k` when `v ∈ c` and `v ∉ c'` (`sum_all_eq_deltaD_add`). This is not
+`k - 2 δ_vv = k`, so the printed sum is `ΔD + k` when `v ∈ c` and `v ∉ c'` ([`sum_all_eq_deltaD_add`](MedianConsensus/GraphAware/Move.lean#L147)). This is not
 the change in the objective, and it changes decisions: for the move of Fig. 2, the literal sum is `0`, where the
-figure has `-4` (`figure2_literal`), and the move would not be made. Fig. 2 leaves `v₃` out of its sum over `c₁`,
+figure has `-4` ([`figure2_literal`](MedianConsensus/GraphAware/Figures.lean#L59)), and the move would not be made. Fig. 2 leaves `v₃` out of its sum over `c₁`,
 the authors' code skips `u = v`, and Filkov and Skiena's Eq. (12), the source of this formula, prints `j ≠ x` in the
 sum, as does an earlier formula in the arXiv source (commented out). So only one reading can be intended. The formalization sums over `u ≠ v`, and then `ΔD` is exactly the change in the
-objective (`equation5`) and in the total distance (`totalDistance_moveVertex`). The appendix's first line, with
+objective (`equation5`) and in the total distance ([`totalDistance_moveVertex`](MedianConsensus/GraphAware/Move.lean#L201)). The appendix's first line, with
 its sum over `u ∈ c`, has the same slip.
 
 **E5. Graph-aware consensus clustering, p. 4: "Consequently".** The paper says that the order of the moves
 influences the set of potential moves, and "Consequently, this greedy moving policy, like any greedy
 algorithm, does not guarantee an optimal solution". The premise and the conclusion are both true, but the second
-does not follow from the first. On the instance of `order_influences_candidates`, the order changes the candidates,
+does not follow from the first. On the instance of [`order_influences_candidates`](MedianConsensus/Algorithm/Examples.lean#L83), the order changes the candidates,
 and yet every run stops at a median. On the instance of `greedy_not_optimal`, *every* run stops at a partition that is
-not a median, so the failure does not come from the order. The order can matter (`greedy_order_dependent`, with unique
+not a median, so the failure does not come from the order. The order can matter ([`greedy_order_dependent`](MedianConsensus/Algorithm/Examples.lean#L151), with unique
 best moves throughout). "Like any greedy algorithm" is also too broad: Kruskal's algorithm is greedy and optimal. And
 p. 6 evaluates all the moves of an iteration "at the beginning of the iteration", where the order plays no role within
 an iteration.
@@ -153,10 +153,10 @@ an iteration.
 are greater than a threshold `λ`", and says that this "creates multiple connected components where each
 component is composed of relatively homogeneous partitions with inter-partition distances less than `λ`". This
 is false for two partitions of a component, by chaining. Three partitions with split-join distances `1, 1, 2`
-lie in one component at `λ = 1` (`group_distances_counterexample_splitJoin`), and the same happens for the
-Mirkin distance (`group_distances_counterexample_mirkin`). An edge of weight exactly `λ` is kept too, so even
+lie in one component at `λ = 1` ([`group_distances_counterexample_splitJoin`](MedianConsensus/Grouping.lean#L81)), and the same happens for the
+Mirkin distance ([`group_distances_counterexample_mirkin`](MedianConsensus/Grouping.lean#L97)). An edge of weight exactly `λ` is kept too, so even
 consecutive partitions have distance at most `λ`, not less. What holds is that two partitions of a component of
-`m` partitions have distance at most `(m - 1) λ` (`dist_le_of_reachable`, `splitJoin_le_of_reachable`). The
+`m` partitions have distance at most `(m - 1) λ` ([`dist_le_of_reachable`](MedianConsensus/Grouping.lean#L39), [`splitJoin_le_of_reachable`](MedianConsensus/Grouping.lean#L71)). The
 paper's hedge "relatively homogeneous" softens this, and the method is unaffected.
 
 **E7. The algorithm and Parallel algorithm, pp. 5-6: the stopping condition and the unspecified checks.** The
@@ -168,7 +168,7 @@ partition at the beginning of the iteration. After some validation checks of the
 performed together". (A comment in the arXiv source says that all the experiments use this version.) The checks
 are not specified, and they matter. Without them, the iteration can raise the objective and then never reach its
 stopping condition: on three vertices and three inputs, the singletons lead to a partition with a larger
-objective, which then leads back to itself, while vertices can still move (`batch_counterexample`). The authors'
+objective, which then leads back to itself, while vertices can still move ([`batch_counterexample`](MedianConsensus/Algorithm/Parallel.lean#L45)). The authors'
 code has two checks. One invalidates one of two vertices attracted to each other. The other applies only when the same
 set of vertices moves as in the previous iteration: it compares the summed predicted `ΔD`, and ends the loop when this has
 not decreased. There is also an iteration limit, so the code always stops, but that need not be the paper's stopping
@@ -181,15 +181,15 @@ is very low. For the simple case of same-size clusters, it is easy to see that b
 simultaneously." Its reasons are that `m̂` and `b` are both high at the start, from singletons, and both decrease later. The
 two conditions can occur together in a state that the algorithm reaches: on the complete graph on `n = 2 s` vertices, with
 the two halves as the one input, a run from the singletons reaches the two halves, with `b = 2` and `m̂ = n² / 4`
-(`both_conditions_occur`). There the cost of an iteration is exactly `n² k_h` (`iterationCost_halves`), so the worry is
+([`both_conditions_occur`](MedianConsensus/Algorithm/Complexity.lean#L444)). There the cost of an iteration is exactly `n² k_h` ([`iterationCost_halves`](MedianConsensus/Algorithm/Complexity.lean#L429)), so the worry is
 realized, and the reassurance fails in its reason and its conclusion. A sparse graph does the same: two paths of `s` vertices
 with a perfect matching between them have `m̂ = s` and `b = 2`, with cost of order `n²` (computed by script). The paper's formula
 overestimates at the state above, at `n³ k_h / 8`, because an iteration has at most `n (b - 1)` potential moves
-(`card_potentialMoves_le_mul`), not only `2 m̂` (`card_potentialMoves_le`). What holds is the upper bound `2 n² k_h` for same-size
-clusters (`iterationCost_le_quadratic`). Without same-size clusters it fails (`iterationCost_large_cluster`), and the excess
+([`card_potentialMoves_le_mul`](MedianConsensus/Algorithm/Complexity.lean#L89)), not only `2 m̂` (`card_potentialMoves_le`). What holds is the upper bound `2 n² k_h` for same-size
+clusters ([`iterationCost_le_quadratic`](MedianConsensus/Algorithm/Complexity.lean#L153)). Without same-size clusters it fails ([`iterationCost_large_cluster`](MedianConsensus/Algorithm/Complexity.lean#L173)), and the excess
 grows: the complete graph on 80 vertices, with one cluster of 40 and singletons, costs `70360` against `12800` (by script). This
 agrees with the paper's next remark on large clusters. The bound `O(m̂ n k_h / b)` itself is proved, with its constant, along the
-paper's derivation (`iterationCost_mul_parts_le`).
+paper's derivation ([`iterationCost_mul_parts_le`](MedianConsensus/Algorithm/Complexity.lean#L141)).
 
 **E9. Computation and memory complexity, p. 6, and Conclusions, p. 12: reported figures.** The paper says: "Given that all
 algorithms utilize 8-byte numbers for each piece of information, our algorithm required 296 megabytes of memory while some other
@@ -204,7 +204,7 @@ script, and not in Lean.
 
 **E10. Evaluation metrics, p. 8: the description of the split-join distance.** The paper says that it "quantifies
 the minimum number of split and join operations required to transform one partition into the other". One split
-takes `{{0, 1, 2, 3}}` to `{{0, 1}, {2, 3}}`, at distance `2` (`splitJoin_one_split`). The proof of van Dongen's
+takes `{{0, 1, 2, 3}}` to `{{0, 1}, {2, 3}}`, at distance `2` ([`splitJoin_one_split`](MedianConsensus/Grouping.lean#L134)). The proof of van Dongen's
 Theorem 4 shows that the distance is a shortest path where a split or a join costs the size of the smaller part, and he
 reads it as a number of node moves. The paper's use of the distance is unaffected.
 
@@ -213,11 +213,11 @@ reads it as a number of node moves. The paper's use of the distance is unaffecte
 - *Eq. (7).* The appendix calls the distance the symmetric difference of "the sets of all co-clustered pairs", and derives Eq. (7) from
   `|A △ B| = |A| + |B| - 2 |A ∩ B|`. For those sets, this gives an expression in `1 - δ_uv`, not Eq. (7). The identity gives Eq. (7) for the
   complements, the separated pairs, and the two symmetric differences coincide. A comment in the arXiv source notices the point, with a sign
-  error: `(1-x)+(1-y)+2(1-x)(1-y)` for `(1-x)+(1-y)-2(1-x)(1-y)`. The formalization uses the complements (`mirkin_eq_card_symmDiff_sepPairs`,
+  error: `(1-x)+(1-y)+2(1-x)(1-y)` for `(1-x)+(1-y)-2(1-x)(1-y)`. The formalization uses the complements ([`mirkin_eq_card_symmDiff_sepPairs`](MedianConsensus/Problem/Mirkin.lean#L51),
   `equation7`).
 - *The gain of a move.* The derivation starts from `∑_{u ∈ c} (k - 2 δ_uv) - ∑_{u ∈ c'} (k - 2 δ_uv)`, and this first line, which is the actual
   content, is asserted; the rest is algebra. It needs that a move changes `δ_uv(C)` only for the pairs containing `v`, and for those, to
-  `1 - σ_u(c')` from `1 - σ_u(c)`. `equation5` proves this, through `coClustered_moveVertex_of_ne` and `coClustered_moveVertex_self`. Filkov and
+  `1 - σ_u(c')` from `1 - σ_u(c)`. `equation5` proves this, through [`coClustered_moveVertex_of_ne`](MedianConsensus/GraphAware/Move.lean#L21) and [`coClustered_moveVertex_self`](MedianConsensus/GraphAware/Move.lean#L27). Filkov and
   Skiena prove the analogous step (their Lemma 3).
 
 **E12. Typos.**
@@ -240,7 +240,7 @@ No statement of the paper needs a hypothesis of substance. These are degenerate 
 | Where | Missing hypothesis | Counterexample without it | In the formalization |
 | --- | --- | --- | --- |
 | Eq. (6) | `v` has a neighbour | For an isolated `v`, `C_v` is empty, and the `argmin` does not exist | `equation6` proves this equivalence; the algorithm then does not move `v` |
-| Rand distance | `n ≥ 2` | For `n ≤ 1`, the denominator `C(n, 2)` vanishes | `randDistance_eq_mirkin_div` and `randDistance_isMetric` assume it |
+| Rand distance | `n ≥ 2` | For `n ≤ 1`, the denominator `C(n, 2)` vanishes | [`randDistance_eq_mirkin_div`](MedianConsensus/Evaluation/Rand.lean#L57) and [`randDistance_isMetric`](MedianConsensus/Evaluation/Rand.lean#L71) assume it |
 | Eq. (5) | `c'` is a cluster of `C` | Otherwise there is no such move | `equation5` assumes it |
 
 ## 5. Redundant hypotheses
@@ -254,26 +254,26 @@ the others as singletons; by script). Eqs. (1)-(5) do not involve the graph, as 
 - **Partitions.** A partition of the vertex set is a `Finpartition (univ : Finset V)`, as `Clustering V`. Eq. (2) is
   defined as the product over its parts, and `equation2` proves its values.
 - **Vertices and pairs.** `V` is a finite linear order. A sum `∑_uv` runs over the unordered pairs of distinct vertices,
-  listed as `(u, v)` with `u < v` (`pairs`). The order only names the pairs: `card_ordered_disagreements` and
-  `two_mul_objective` express the distance and the objective without it. See E1.
-- **Eq. (1).** The `argmin` is a set, so the formalization has a predicate, `IsMedian`. Minimizers exist (`equation1`), and
-  need not be unique (`isMedian_of_two`).
+  listed as `(u, v)` with `u < v` ([`pairs`](Challenge.lean#L92)). The order only names the pairs: `card_ordered_disagreements` and
+  [`two_mul_objective`](MedianConsensus/Problem/Objective.lean#L58) express the distance and the objective without it. See E1.
+- **Eq. (1).** The `argmin` is a set, so the formalization has a predicate, [`IsMedian`](Challenge.lean#L129). Minimizers exist (`equation1`), and
+  need not be unique ([`isMedian_of_two`](MedianConsensus/Problem/Objective.lean#L72)).
 - **Values.** `σ`, `δ` and the objective take values in `ℤ`, since `k - 2 δ_uv` can be negative. The total distance is in
   `ℕ`; the identities that relate them are in `ℤ`.
-- **A move.** `moveVertex` is defined through labels: `v` gets the label `c'`, and every other vertex keeps its cluster as its
-  label. `coClustered_moveVertex_of_ne` and `coClustered_moveVertex_self` characterize it, and `parts_moveVertex` proves that
+- **A move.** [`moveVertex`](Challenge.lean#L152) is defined through labels: `v` gets the label `c'`, and every other vertex keeps its cluster as its
+  label. [`coClustered_moveVertex_of_ne`](MedianConsensus/GraphAware/Move.lean#L21) and [`coClustered_moveVertex_self`](MedianConsensus/GraphAware/Move.lean#L27) characterize it, and [`parts_moveVertex`](MedianConsensus/GraphAware/Move.lean#L39) proves that
   its clusters are the expected ones. If `c'` is not a cluster, `v` becomes a singleton: this is not a move of the paper, and
   the theorems assume that `c'` is a cluster.
 - **Eq. (5).** The sum runs over `u ≠ v` (E4).
-- **Eq. (6).** `IsBestMove` is a predicate, since the minimizer need not be unique. `C_v` may contain the current cluster of `v`,
+- **Eq. (6).** [`IsBestMove`](Challenge.lean#L163) is a predicate, since the minimizer need not be unique. `C_v` may contain the current cluster of `v`,
   with `ΔD = 0`; such a pick is not a move, since a move needs `ΔD < 0`.
-- **The algorithm, one move at a time.** `GreedyStep` lets any vertex with a negative best move take any of its best moves. The
+- **The algorithm, one move at a time.** [`GreedyStep`](Challenge.lean#L176) lets any vertex with a negative best move take any of its best moves. The
   theorems about it therefore hold for every order and every way of breaking ties. The start is `⊥`, the singletons
-  (`coClustered_bot`).
-- **The iteration.** `BatchStep` performs all the best moves together, and has no validation checks, since the paper does not
+  ([`coClustered_bot`](MedianConsensus/Problem/CoClustering.lean#L83)).
+- **The iteration.** [`BatchStep`](MedianConsensus/Algorithm/Parallel.lean#L37) performs all the best moves together, and has no validation checks, since the paper does not
   say what they are (E7).
 - **Cost.** The paper's `O(·)` statements are informal. The formalization counts operations for an explicit model: evaluating a
-  term of Eq. (5) for a cluster `c` costs `k_h` per vertex of `c` (`moveCost`, `iterationCost`).
+  term of Eq. (5) for a cluster `c` costs `k_h` per vertex of `c` ([`moveCost`](MedianConsensus/Algorithm/Complexity.lean#L111), [`iterationCost`](MedianConsensus/Algorithm/Complexity.lean#L115)).
 - **Thresholds.** In the grouping, `d` and `λ` are natural numbers. The paper's thresholds between `0.05` and `1` are for a
   normalized distance that it does not define. The authors' code uses `d / (2 n)`, and `d / (2 n) ≤ λ` is `d ≤ ⌊2 n λ⌋`.
 - **The figures.** The partitions and the 23 edges of Figs. 1 and 2 were read from the published figures, and checked by a second
@@ -286,17 +286,17 @@ Eq. (5) (E4), and `≈` in the appendix (E12).
 
 The paper gives few derivations, and they are short:
 
-- Eq. (7), through the symmetric difference and the identity for its size: `mirkin_eq_card_symmDiff_sepPairs`, `equation7`.
+- Eq. (7), through the symmetric difference and the identity for its size: [`mirkin_eq_card_symmDiff_sepPairs`](MedianConsensus/Problem/Mirkin.lean#L51), `equation7`.
 - The chain from Eq. (1) to Eq. (4), which `appendix_identity` follows line by line, and `equation4`.
-- The derivation of `ΔD`: `deltaD_eq_sum_sub_sum`, `deltaD_eq_second_form`, `equation5`.
-- The bound `O(m̂ n k_h / b)`, from the number of potential moves and the cost of each: `iterationCost_mul_parts_le`.
+- The derivation of `ΔD`: [`deltaD_eq_sum_sub_sum`](MedianConsensus/GraphAware/Move.lean#L124), [`deltaD_eq_second_form`](MedianConsensus/GraphAware/Move.lean#L117), `equation5`.
+- The bound `O(m̂ n k_h / b)`, from the number of potential moves and the cost of each: [`iterationCost_mul_parts_le`](MedianConsensus/Algorithm/Complexity.lean#L141).
 
 All follow the paper, with two repairs of a step, each forced because the paper's step has a gap:
 
 | Result | The paper's argument | The formalization's | Why it is necessary | E-item |
 | --- | --- | --- | --- | --- |
 | `equation7` | The identity for `\|A △ B\|`, with the sets of co-clustered pairs named | The same identity, for the sets of separated pairs, which are what `δ` indicates | The identity for the named sets does not give Eq. (7) | E11 |
-| `equation5` | Asserts the change in the objective as the first line of the derivation, then algebra | Proves the change directly from the pairs containing `v`, for the form that `deltaD` defines; the first line is then `deltaD_eq_sum_sub_sum` | The paper gives no argument for its first line, so there is nothing to follow at that step | E11 |
+| `equation5` | Asserts the change in the objective as the first line of the derivation, then algebra | Proves the change directly from the pairs containing `v`, for the form that [`deltaD`](Challenge.lean#L140) defines; the first line is then [`deltaD_eq_sum_sub_sum`](MedianConsensus/GraphAware/Move.lean#L124) | The paper gives no argument for its first line, so there is nothing to follow at that step | E11 |
 
 Everything else that the formalization proves, the paper states without a derivation, or derives by an argument that turns out to be wrong (the reasoning of E8, which
 is not formalized, since its conclusion fails). Those proofs are the formalization's own, and each is the evident one: the metric property through the symmetric
@@ -305,47 +305,47 @@ van Dongen's argument (Section 2). An independent reader compared these formal p
 
 ## 8. What each result depends on
 
-Generated from `scripts/Audit.lean`.
+Generated from [`scripts/Audit.lean`](scripts/Audit.lean).
 
 | Result | Lean | Results from prior work used |
 | --- | --- | --- |
 | Eq. (1) | `equation1` | – |
 | Eq. (2) | `equation2` | – |
 | Eq. (3) | `equation3` | – |
-| Fig. 1 caption, Hamming | `deltaTotal_eq_hammingDist` | – |
+| Fig. 1 caption, Hamming | [`deltaTotal_eq_hammingDist`](MedianConsensus/Problem/CoClustering.lean#L127) | – |
 | Eq. (7) | `equation7` | – |
 | Mirkin metric | `mirkin_isMetric` | – |
 | Mirkin counts twice | `card_ordered_disagreements` | – |
 | Appendix identity | `appendix_identity` | – |
 | Eq. (4) | `equation4` | – |
-| Intra/inter | `totalDistance_eq_intra_sub_inter` | – |
+| Intra/inter | [`totalDistance_eq_intra_sub_inter`](MedianConsensus/Problem/Objective.lean#L99) | – |
 | Eq. (5) | `equation5` | – |
 | Negative reduces | `moveVertex_reduces` | – |
 | Eq. (6) | `equation6` | – |
 | Stopping condition | `not_canMove_iff` | – |
 | The algorithm stops | `greedyStep_wellFounded` | – |
 | Not optimal | `greedy_not_optimal` | – |
-| Order dependence | `order_influences_candidates` | – |
-| Parallel batch | `batch_counterexample` | – |
-| Pairs count | `card_pairs` | – |
-| Moves list | `potentialMoves_eq_image` | – |
+| Order dependence | [`order_influences_candidates`](MedianConsensus/Algorithm/Examples.lean#L83) | – |
+| Parallel batch | [`batch_counterexample`](MedianConsensus/Algorithm/Parallel.lean#L45) | – |
+| Pairs count | [`card_pairs`](MedianConsensus/Algorithm/Complexity.lean#L25) | – |
+| Moves list | [`potentialMoves_eq_image`](MedianConsensus/Algorithm/Complexity.lean#L31) | – |
 | Moves at most 2m̂ | `card_potentialMoves_le` | – |
-| Moves at most m | `card_potentialMoves_le_two_mul_edges` | – |
-| Iteration cost | `iterationCost_mul_parts_le` | – |
-| Large clusters | `iterationCost_large_cluster` | – |
-| Both conditions | `both_conditions_occur` | – |
-| Group distances | `group_distances_counterexample_splitJoin` | – |
-| Group distances, corrected | `splitJoin_le_of_reachable` | `External.VanDongen.splitJoin_isMetric` |
-| Groups decrease | `card_components_antitone` | – |
-| Split-join and operations | `splitJoin_one_split` | – |
-| Rand metric | `randDistance_isMetric` | – |
-| Rand normalized | `randDistance_eq_mirkin_div` | – |
+| Moves at most m | [`card_potentialMoves_le_two_mul_edges`](MedianConsensus/Algorithm/Complexity.lean#L83) | – |
+| Iteration cost | [`iterationCost_mul_parts_le`](MedianConsensus/Algorithm/Complexity.lean#L141) | – |
+| Large clusters | [`iterationCost_large_cluster`](MedianConsensus/Algorithm/Complexity.lean#L173) | – |
+| Both conditions | [`both_conditions_occur`](MedianConsensus/Algorithm/Complexity.lean#L444) | – |
+| Group distances | [`group_distances_counterexample_splitJoin`](MedianConsensus/Grouping.lean#L81) | – |
+| Group distances, corrected | [`splitJoin_le_of_reachable`](MedianConsensus/Grouping.lean#L71) | [`External.VanDongen.splitJoin_isMetric`](External/VanDongen/SplitJoin.lean#L149) |
+| Groups decrease | [`card_components_antitone`](MedianConsensus/Grouping.lean#L120) | – |
+| Split-join and operations | [`splitJoin_one_split`](MedianConsensus/Grouping.lean#L134) | – |
+| Rand metric | [`randDistance_isMetric`](MedianConsensus/Evaluation/Rand.lean#L71) | – |
+| Rand normalized | [`randDistance_eq_mirkin_div`](MedianConsensus/Evaluation/Rand.lean#L57) | – |
 | Fig. 1 | `figure1` | – |
 | Fig. 2 | `figure2` | – |
-| Fig. 10 | `contingency_sum` | – |
+| Fig. 10 | [`contingency_sum`](MedianConsensus/Evaluation/Rand.lean#L33) | – |
 
-`External.VanDongen.splitJoin_isMetric` is used by `splitJoin_le_of_reachable`. The route check passes, with one difference recorded in `docs/route_differences.tsv`, with its reason (the values of `δ` in Eq. (2), which the
-paper uses throughout without citing). This is weak evidence here. The paper has no theorem environments and its derivations cite almost nothing, so `docs/paper_routes.tsv` was
+[`External.VanDongen.splitJoin_isMetric`](External/VanDongen/SplitJoin.lean#L149) is used by [`splitJoin_le_of_reachable`](MedianConsensus/Grouping.lean#L71). The route check passes, with one difference recorded in [`docs/route_differences.tsv`](docs/route_differences.tsv), with its reason (the values of `δ` in Eq. (2), which the
+paper uses throughout without citing). This is weak evidence here. The paper has no theorem environments and its derivations cite almost nothing, so [`docs/paper_routes.tsv`](docs/paper_routes.tsv) was
 written by hand, after the proofs were finished. The comparison that counts is the line-by-line one of Section 7.
 
 ## 9. Not formalized
@@ -397,7 +397,7 @@ alternate version, as stated.
   Kalyanaraman ([Parallel Comput. 2015](https://arxiv.org/abs/1410.1237)) show that a parallel modularity gain "cannot be guaranteed to be
   always positive", and use a rule against swaps between singletons. Shi et al. ([PVLDB 2021](http://www.vldb.org/pvldb/vol14/p2305-shi.pdf))
   say of correlation clustering that "these moves in tandem may lower the total objective; there is no guarantee of convergence". So
-  `batch_counterexample` is the median-partition instance of a known phenomenon. The paper's statement that "there has been no study on
+  [`batch_counterexample`](MedianConsensus/Algorithm/Parallel.lean#L45) is the median-partition instance of a known phenomenon. The paper's statement that "there has been no study on
   parallelization strategies of the consensus clustering algorithm" is about consensus clustering in particular; parallel correlation
   clustering, which contains it as a weighted case, had been studied (also [Pan et al., preprint 2015](https://arxiv.org/abs/1507.05086)).
 - **The distances.** [Meilă (JMVA 2007)](https://doi.org/10.1016/j.jmva.2006.11.013) gives the Mirkin metric in the form of
@@ -434,11 +434,11 @@ consult or use them.
 
 ## 11. What's next
 
-Plans for follow-up papers are kept in `NEXT.md`, which is not published.
+Plans for follow-up papers are kept in [`NEXT.md`](NEXT.md), which is not published.
 
 ### Open directions
 
-- **A guarantee for the algorithm.** No approximation guarantee is known for the greedy rule from the singletons, and `graph_restriction_stuck` and `greedy_not_optimal` show
+- **A guarantee for the algorithm.** No approximation guarantee is known for the greedy rule from the singletons, and [`graph_restriction_stuck`](MedianConsensus/Algorithm/Examples.lean#L183) and `greedy_not_optimal` show
   that it cannot be exact without some condition. What ratio holds for its runs on the complete graph, and under what relation between `G` and the inputs?
 - **The validation checks.** Which rule for the moves of an iteration guarantees that the objective decreases and the iteration stops, while still making many moves in each
   iteration? Performing only the single best move, which p. 6 mentions, guarantees descent, and gives up the parallelism. So the question is about the progress per iteration.
@@ -461,8 +461,8 @@ The appendix's chain to Eq. (4) is already this computation, per pair. The rest 
 
 - **What could extend it.** The variation of information and its metric property; the validation checks of the authors' code, once a precise
   statement is agreed; the `O(·)` statements against a real cost model; hardness (E3).
-- **`Basic/`** holds `Finset.card_symmDiff_add_two_mul_card_inter` and `Finset.card_symmDiff_triangle`, which could go to
+- **[`Basic/`](Basic)** holds [`Finset.card_symmDiff_add_two_mul_card_inter`](Basic/Data/Finset/SymmDiff.lean#L22) and [`Finset.card_symmDiff_triangle`](Basic/Data/Finset/SymmDiff.lean#L32), which could go to
   `Mathlib/Data/Finset/SymmDiff.lean`, and the sums over pairs `x < y`, which could go to `Mathlib/Algebra/BigOperators/` and
   `Mathlib/Combinatorics/SimpleGraph/Finite.lean`. They depend on nothing else.
-- **`External/`** holds the proof that the split-join distance is a metric, in `Finset` and `Finpartition` terms, which other formalizations
+- **[`External/`](External)** holds the proof that the split-join distance is a metric, in `Finset` and `Finpartition` terms, which other formalizations
   about comparing partitions can reuse.

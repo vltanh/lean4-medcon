@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Adapted from formalize-math-paper (https://github.com/vltanh/formalize-math-paper), version 3.0.0, Apache-2.0.
 """Link the Lean names in the Markdown documentation to the code.
 
 Every inline code span that names a declaration, a module, a file or a directory of this
