@@ -9,12 +9,12 @@ project:
     finite vertex set, a median partition minimizes the total Mirkin distance to them. The formalization proves
     that the Mirkin distance is a metric, derives the objective of Eq. (4) and the exact change Delta D of Eq. (5)
     under moving a vertex, and proves that the paper's greedy algorithm stops when moves are made one at a time,
-    that it can stop only at non-medians, and that an iteration has at most 2 m-hat potential moves. It computes the
+    that on some instances it stops only at non-medians, and that an iteration has at most 2 m-hat potential moves. It computes the
     paper's worked example from the definitions.
 
 
     It also records an audit of the paper. Eq. (5) as printed is off by k, and the paper's own figure contradicts it.
-    Several claims in running text are false as written, with Lean counterexamples and corrected statements. Performing
+    Several claims in running text are false as written or undefined, with Lean counterexamples and corrected statements. Performing
     all the moves of an iteration together, without the checks that the paper leaves unspecified, can raise the
     objective and never stop. The paper's experiments are not formalized.
   authors:
@@ -78,9 +78,9 @@ automation:
     - method: "agent"
       models: ["claude-opus-5-5"]
       framework: "Claude Code (VS Code extension, Claude Agent SDK)"
-      tool_setup: "The formalize-math-paper skill, with independent agents: statement review, literature search, audit verification, and refereeing of follow-up ideas."
+      tool_setup: "The formalize-math-paper skill, with 4 sub-agents, at most 2 at once: statement review, literature search, audit verification, and refereeing of follow-up ideas."
       cost:
-        wall_time: "not yet recorded"
+        wall_time: "2.35 hours elapsed to the completed audit; 2.4 hours of total sub-agent time"
         spend_usd: "not tracked"
         hardware: "local machine"
       prompting_notes: "One prompt: the paper's URL, with the skill."
@@ -95,9 +95,12 @@ fidelity:
     the moves together is formalized without the unspecified checks; the costs are explicit counts; the grouping threshold is a natural number.
     Corrected misprints: the summand of Eq. (3) (P_k for P_i), the range of the sum in Eq. (5) (u different from v, as in the paper's Fig. 2, since
     the printed sum is larger by k), and the approximation sign in the appendix (equality up to a constant). Claims false as written, which are not
-    changed, but proved false with the correct version beside them: the description through intra- and inter-cluster disagreements, the distances in
-    a group of partitions, the claim that m-hat high and b low cannot occur together, and the description of the split-join distance. Every proof
-    that the paper gives is followed; no proof departs from the paper's. REPORT.md has the details.
+    changed, but proved false with the correct version beside them: the distances in a group of partitions, the claim that m-hat high and b low cannot
+    occur together, and the description of the split-join distance; and the description through intra- and inter-cluster disagreements, undefined as
+    written and false on the one definition on record. Departures from the paper's proofs, both repairing a step with a gap: Eq. (7) applies the identity
+    for the symmetric difference to the separated pairs, since the co-clustered pairs that the paper names do not give Eq. (7); and Eq. (5) proves directly
+    the change that the appendix asserts as its first line. The cited metric property of the split-join distance is proved by a direct count, not by the
+    source's argument. Every other derivation of the paper is followed. REPORT.md has the details.
 
 review:
   status: "agent-reviewed"
